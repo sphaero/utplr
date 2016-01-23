@@ -1,4 +1,23 @@
-/**** PLAYLIST METHODEN ****/
+/**** Disclaimer ****
+ * 
+ * De pagina start met een standaard youtube filmpje. Je dient een search
+ * query in te vullen en de resultaten aan de playlist toe te voegen door
+ * er op te klikken. Vervolgens kan de je playlist queue sorteren door
+ * de thumbnails te 'drag&droppen'
+ * 
+ * Ik heb de code alleen onder chromium getest! Version 46.0.2490.71
+ * De code gebruikt zowel jQuery als native JS. Puur ter illustratie en
+ * welke methode op dat moment het beste uit kwam. Ik werk zelf 
+ * voornamelijk met jQuery.
+ * 
+ */
+ 
+/**** PLAYLIST METHODEN ****
+ * 
+ * De playlist methode queueVid ontvangt een DOM element en 'append' die
+ * aan de '#playlist' div. De popFirstVid returned de eerste child
+ * van de '#playlist' div en verwijdert die.
+ */
 function PlaylistException(message) {
    this.message = message;
    this.name = "PlaylistException";
@@ -40,8 +59,12 @@ function popFirstVid()
     }
 }
 
-/**** YOUTUBE PLAYER METHODEN ****/
-// Google api Iframe prepare dingen
+/**** YOUTUBE PLAYER METHODEN ****
+ * 
+ * Dit zijn eigenlijk standaard YT api methoden.
+ * Ik heb alleen de playlist methoden toegevoegd en wat state logica
+ */
+   // Google api Iframe prepare dingen
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -126,7 +149,12 @@ function stopVideo()
     player.stopVideo();
 }
 
-/**** GOOGLE/YOUTUBE API METHODEN ****/
+/**** GOOGLE/YOUTUBE API METHODEN ****
+ * 
+ * Wederom standaard Google API methoden. Ik heb alleen code toegevoegd
+ * om de juiste data uit de resultaten te vissen.
+ * Door op de search results te clicken voeg je ze toe aan de playlist
+ */
 function keyWordsearch()
 {
     gapi.client.setApiKey('AIzaSyA20UyrC5ULMAj80Xb0iztNb4pjvjNPQTo'); //Mijn Key
@@ -173,10 +201,15 @@ function makeRequest()
     });
 }
 
-/**** PLAYLIST SORTING METHODEN ****/
+/**** PLAYLIST SORTING METHODEN ****
+ * 
+ * De methoden haken in op de html5 drag&drop API
+ * Een dragout zou nog gebruikt kunnen worden voor verwijderen uit de
+ * playlist. 
+ */  
 function init_search()
 {
-    var searchbtn = '<label><input id="query" value="spacedisco" type="text"/><button id="search-button"  onclick="keyWordsearch()">Search</button></label><div id="searchresults"></div>';
+    var searchbtn = '<label><input id="query" value="magicfly" type="text"/><button id="search-button"  onclick="keyWordsearch()">Search</button></label><div id="searchresults"></div>';
     $('#searchlist').append(searchbtn);
 }
 init_search();
