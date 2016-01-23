@@ -1,35 +1,43 @@
 /**** PLAYLIST METHODEN ****/
-var queue = ['M7lc1UVf-VE',]; // De playlist queue
+function PlaylistException(message) {
+   this.message = message;
+   this.name = "PlaylistException";
+}
 
 // Just queue a video and directly play if none is playing
 function queueVid(vidId) 
 {
-    console.log("queueVid:"+vidId +" "+player.getPlayerState())
+    console.log("queueVid:"+vidId.id +" "+player.getPlayerState())
     if (player.getPlayerState() > 0  && player.getPlayerState() != 5)
     {
-        console.log("queuing vid: "+vidId +"plrState: " +player.getPlayerState());
-        queue.push(vidId);
+        console.log("queuing vid: "+vidId.id +"plrState: " +player.getPlayerState());
+        $("#playlist").append(vidId);
     }
     else 
     {
-        console.log("instant play vid: "+vidId);
+        console.log("instant play vid: "+vidId.id);
         player.loadVideoById({
-            'videoId': vidId,
+            'videoId': vidId.id,
             'startSeconds': 0, 
             'endSeconds': 6
             });
         //player.loadVideoById(vidId,0);
-        $('#'+vidId).remove();
     }
 }
 
 function popFirstVid()
 {
-    var vidId = queue.shift();
-    //remove element?
-    console.log("removing "+vidId)
-    $('#'+vidId).remove();
-    return vidId;
+    var vidId = document.getElementById('playlist').children[0]
+    if (vidId.id === undefined)
+    {
+        throw new PlaylistException("Empty playlist");
+    }
+    else
+    {
+        console.log("removing "+vidId.id);
+        vidId.remove();  //remove element
+        return vidId;
+    }
 }
 
 /**** YOUTUBE PLAYER METHODEN ****/
@@ -39,15 +47,24 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// Deve vult de Iframe
+// Deze vult de Iframe
 var player;
 function onYouTubeIframeAPIReady() 
 {
+    var vidId = "M7lc1UVf-VE";
+    try
+    {
+        var vidId = popFirstVid().id;
+    }
+    catch(e)
+    {
+        vidId = "M7lc1UVf-VE";
+    }
     player = new YT.Player('player', 
     {
       height: '390',
       width: '640',
-      videoId: popFirstVid(),
+      videoId: vidId,
       events: {
         'onReady': onPlayerReady,
         'onStateChange': onPlayerStateChange
@@ -74,10 +91,12 @@ function onPlayerStateChange(event)
         queued = false;
     }
     // ENDED && there is a queue to play && there is nothing queued in player
-    else if (event.data == YT.PlayerState.ENDED && queue.length && !queued )
+    else if (event.data == YT.PlayerState.ENDED 
+                && document.getElementById('playlist').children.length 
+                && !queued )
     {
         console.log("Play new vid");
-        player.loadVideoById(popFirstVid(),0);
+        player.loadVideoById(popFirstVid().id,0);
             /*{
             'videoId': popFirstVid(),
             'startSeconds': 0, 
@@ -85,11 +104,11 @@ function onPlayerStateChange(event)
             });*/
         queued = true;
     }
-    else if (event.data == -1 && queue.length && !queued )
+    else if (event.data == -1 && $("#playlist img").length && !queued )
     {
         console.log("Play new vid");
         player.loadVideoById({
-            'videoId': popFirstVid(),
+            'videoId': popFirstVid().id,
             'startSeconds': 0, 
             'endSeconds': 6
             });
@@ -163,11 +182,10 @@ init_search();
 function add_to_playlist(ev)
 {
     ev.preventDefault();
-    var img = ev.target;
     ev.target.remove();
-    $('#playlist').append(img);
+    //still need to remove the click handler
     console.log("add_to_playlist "+ev.target.id);
-    queueVid(ev.target.id);
+    queueVid(ev.target);
 }
 
 function sortable(rootEl, update){
