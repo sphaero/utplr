@@ -10,6 +10,8 @@
  * welke methode op dat moment het beste uit kwam. Ik werk zelf 
  * voornamelijk met jQuery.
  * 
+ * De videos spelen maar voor 6 sec.
+ * 
  */
  
 /**** PLAYLIST METHODEN ****
