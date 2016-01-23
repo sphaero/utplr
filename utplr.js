@@ -142,7 +142,9 @@ function makeRequest()
     var request = gapi.client.youtube.search.list(
     {
                q: q,
-            part: 'snippet'                        
+            part: 'snippet',
+            maxResults: 20,
+            type: 'video'
     });
     request.execute(function(response) 
     {
